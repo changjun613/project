@@ -1,0 +1,1253 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>칩네비 - 반도체 진로 내비게이션</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#161616;font:15px Arial,sans-serif}.app{max-width:1100px;margin:auto;background:#fff;min-height:100vh}header{padding:22px;border-bottom:1px solid #eee}h1{margin:0 0 8px;font-size:23px}p{color:#666;line-height:1.5}.warn{margin:16px 22px;padding:12px;background:#fff6d8;border-radius:10px;font-size:13px}
+
+.reco{margin:16px 22px;padding:18px;background:#eef5ff;border-radius:14px}
+.reco h2{margin:0 0 4px;font-size:17px}
+.reco-sub{color:#556;font-size:13px;margin:0 0 14px}
+.form-row{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:12px}
+.field{flex:1;min-width:160px}
+.field label{display:block;font-size:12px;color:#556;margin-bottom:6px;font-weight:bold}
+.field select{width:100%;padding:9px;border:1px solid #d7dde5;border-radius:8px;background:#fff}
+.chipset{display:flex;flex-wrap:wrap;gap:6px}
+.chipset label{display:flex;align-items:center;gap:5px;font-size:12px;background:#fff;border:1px solid #d7dde5;padding:6px 10px;border-radius:20px;cursor:pointer}
+.chipset input{margin:0}
+.reco-btn{margin-top:6px;padding:11px 18px;background:#0675df;color:#fff;border:none;border-radius:10px;font-weight:bold;cursor:pointer;font-size:14px}
+.reco-btn:hover{background:#0560ba}
+.reco-results{margin-top:16px;display:none}
+.reco-results.show{display:block}
+.reco-card{background:#fff;border:1px solid #cfe0f7;border-left:4px solid #0675df;border-radius:10px;padding:13px 15px;margin-bottom:10px}
+.reco-card.tier-low{border-left-color:#c9ced6}
+.reco-card.tier-mid{border-left-color:#e8a33d}
+.reco-card h4{margin:0 0 4px;font-size:15px}
+.reco-meta{color:#667;font-size:12.5px;margin:2px 0 8px}
+.reason{display:inline-block;font-size:11px;background:#e4f0ff;color:#0560ba;padding:3px 8px;border-radius:10px;margin:0 5px 5px 0}
+.reco-card .link{font-size:13px}
+.empty-reco{color:#778;font-size:13px}
+.match-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+.match-score{display:flex;align-items:center;gap:8px;min-width:150px}
+.match-score b{font-size:17px;color:#0560ba}
+.tier-low .match-score b{color:#8a8f99}
+.tier-mid .match-score b{color:#b5791f}
+.match-bar-track{flex:1;height:7px;background:#eaeef3;border-radius:6px;overflow:hidden}
+.match-bar-fill{height:100%;background:linear-gradient(90deg,#0675df,#3fa6ff);border-radius:6px}
+.tier-mid .match-bar-fill{background:linear-gradient(90deg,#e8a33d,#f4c46a)}
+.tier-low .match-bar-fill{background:#c9ced6}
+.tier-label{font-size:11px;font-weight:bold;padding:3px 8px;border-radius:8px;background:#e4f0ff;color:#0560ba;white-space:nowrap}
+.tier-mid .tier-label{background:#fdf1de;color:#b5791f}
+.tier-low .tier-label{background:#f1f2f4;color:#767b85}
+.match-summary{font-size:12.5px;color:#445;margin:0 0 8px;line-height:1.5}
+.reco-list-note{font-size:12px;color:#778;margin:0 0 10px}
+
+.stats{padding:0 22px 14px;display:flex;gap:8px;flex-wrap:wrap}
+.controls{padding:0 22px 14px;display:flex;gap:8px;flex-wrap:wrap}
+.controls input,.controls select{padding:10px;border:1px solid #ddd;border-radius:9px}.controls input{flex:1;min-width:220px}
+.stat{background:#f5f5f5;padding:9px 14px;border-radius:10px}.stat b{font-size:20px;display:block}
+.section-title{padding:18px 22px 4px;font-size:15px;font-weight:bold;color:#333}
+.market-note{padding:0 22px;color:#889;font-size:12.5px;margin:0 0 12px}
+.market-grid{padding:0 22px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:6px}
+.ind-card{background:#f8f9fb;border:1px solid #e8eaee;border-radius:12px;padding:13px 14px}
+.ind-card .ind-label{font-size:11.5px;color:#778;margin-bottom:4px}
+.ind-card .ind-value{font-size:19px;font-weight:bold;color:#161616;margin-bottom:2px}
+.ind-card .ind-trend{font-size:11.5px;color:#0675df;font-weight:bold;margin-bottom:6px}
+.ind-card .ind-note{font-size:12px;color:#556;line-height:1.5;margin-bottom:6px}
+.ind-card .ind-src{font-size:11px;color:#99a}
+.ind-card .ind-src a{color:#99a}
+.news-list{padding:0 22px 40px}
+.news-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #eee}
+.news-item:last-child{border-bottom:none}
+.news-date{flex:0 0 78px;font-size:11.5px;color:#99a;padding-top:2px}
+.news-body h4{margin:0 0 4px;font-size:14.5px;line-height:1.4}
+.news-body .news-src{font-size:11.5px;color:#0675df;font-weight:bold;margin-right:6px}
+.news-body p{margin:4px 0 0;font-size:13px;color:#556;line-height:1.5}
+.news-body a.news-link{font-size:12.5px;color:#0675df;text-decoration:none;font-weight:bold}
+.tabbar{display:flex;gap:6px;padding:0 22px;margin:14px 0 0;border-bottom:1px solid #eee}
+.tab-btn{padding:10px 18px;border:none;background:none;font-size:14.5px;font-weight:bold;color:#889;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tab-btn.active{color:#0675df;border-bottom-color:#0675df}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.news-reco-card{background:#fff;border:1px solid #cfe0f7;border-left:4px solid #0675df;border-radius:10px;padding:13px 15px;margin-bottom:10px}
+.news-reco-card.tier-low{border-left-color:#c9ced6}
+.news-reco-card.tier-mid{border-left-color:#e8a33d}
+.priority-badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#0675df;color:#fff;font-size:12px;font-weight:bold;margin-right:8px;flex:0 0 auto}
+.tier-mid .priority-badge{background:#e8a33d}
+.tier-low .priority-badge{background:#c9ced6}
+.news-reco-head{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+@media(max-width:700px){.market-grid{grid-template-columns:1fr;padding:0 14px}.news-list{padding:0 14px 32px}.market-note{padding:0 14px}.tabbar{padding:0 14px}}
+.grid{padding:0 22px 50px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card{border:1px solid #e4e4e4;border-radius:14px;padding:15px}
+.top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:5px}
+.badge{font-size:11px;background:#f2f2f2;padding:5px 8px;border-radius:20px}
+.dday{font-weight:bold}
+.dday-urgent{background:#ffe3e3;color:#b3261e}
+.dday-soon{background:#fff0d6;color:#8a5a00}
+.dday-normal{background:#e6f7ec;color:#1a7a3d}
+.dday-over{background:#f1f2f4;color:#767b85}
+.dday-none{background:#f1f2f4;color:#9aa0aa}
+.today-note{padding:0 22px;color:#889;font-size:12.5px;margin:-6px 0 10px}
+.free-text-field{margin-bottom:16px}
+.free-text-field textarea{width:100%;min-height:76px;padding:11px;border:1px solid #d7dde5;border-radius:10px;font-family:inherit;font-size:13.5px;resize:vertical;background:#fff}
+.free-text-field label{display:block;font-size:13px;color:#334;margin-bottom:6px;font-weight:bold}
+.free-text-hint{font-size:11.5px;color:#889;margin-top:4px}
+.detail-toggle{font-size:12px;color:#0675df;background:none;border:none;cursor:pointer;padding:0;margin:0 0 12px;text-decoration:underline}
+.detail-fields{display:none}
+.detail-fields.show{display:block}
+.parsed-note{background:#e9f4ff;border-radius:8px;padding:9px 12px;font-size:12.5px;color:#25537d;margin:0 0 12px}
+.status-active{background:#e6f7ec;color:#1a7a3d}
+.status-closed{background:#fff0f0;color:#a33}
+.status-check{background:#fff6d8;color:#8a6d00}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0}.tag{font-size:11px;background:#f5f5f5;padding:5px 7px;border-radius:12px}
+h3{font-size:16px;line-height:1.45}
+.link{display:inline-block;margin-top:10px;color:#0675df;font-weight:bold;text-decoration:none}
+@media(max-width:700px){.grid{grid-template-columns:1fr;padding:0 14px 40px}.controls,.stats,.reco{margin-left:14px;margin-right:14px}.warn{margin:12px 14px}.form-row{gap:10px}}
+</style><div class="app">
+<header><h1>🧭 칩네비</h1><p>반도체 진로 내비게이션 — 전남대학교 교내 + 전국 교외 반도체 활동, 시장현황·뉴스를 내 상황에 맞게 안내합니다</p></header>
+<div class="warn">⚠️ 실제 공식 공지에서 확인한 데이터이지만, 모집 상태·마감일은 계속 바뀝니다. 최종 지원 전 반드시 원문 링크에서 다시 확인하세요.</div>
+<p class="today-note" id="today-note"></p>
+
+<div class="tabbar">
+  <button class="tab-btn active" id="tab-btn-activities" data-tab="activities">🎯 대외활동 추천</button>
+  <button class="tab-btn" id="tab-btn-news" data-tab="news">📊 시장현황 · 뉴스</button>
+</div>
+
+<div class="tab-panel active" id="panel-activities">
+<div class="reco">
+  <h2>🎯 나에게 맞는 활동 추천받기</h2>
+  <p class="reco-sub">내 상황을 자유롭게 적어주면 비서가 읽고 분석해서 <b>추천도(%)</b> 순으로 다시 정렬해드려요.</p>
+
+  <div class="free-text-field">
+    <label>내 상황을 편하게 적어주세요</label>
+    <textarea id="pref-freetext" placeholder="예) 신소재공학부 3학년이고, 반도체 중에서 장비 엔지니어 쪽으로 가고 싶어요. 광주에서 통학 가능하고 방학 때 실습이나 인턴 위주로 찾고 있어요.">신소재공학부 3학년이고, 반도체 중에서 장비 엔지니어 쪽으로 가고 싶어요. 방학 때 실습이나 인턴 위주로 찾고 있어요.</textarea>
+    <p class="free-text-hint">학년, 희망 직무(장비/공정/설계/소재/패키징/테스트/데이터 등), 목적(스펙·실무경험·취업연계·장학금 등), 지역/온오프라인 선호를 적어주시면 더 정확해져요.</p>
+  </div>
+
+  <button type="button" class="detail-toggle" id="detail-toggle">+ 세부 조건 직접 선택하기 (선택사항)</button>
+  <div class="detail-fields" id="detail-fields">
+  <div class="form-row">
+    <div class="field">
+      <label>학년 / 상태</label>
+      <select id="pref-year">
+        <option value="">글에서 자동 인식</option>
+        <option value="1~2학년">1~2학년</option>
+        <option value="3~4학년">3~4학년</option>
+        <option value="졸업예정/취준생">졸업예정 · 취업준비생</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>선호 지역</label>
+      <select id="pref-region">
+        <option value="광주전남">광주·전남 위주로</option>
+        <option value="무관" selected>지역 상관없음(전국)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>선호 참여 형태</label>
+      <select id="pref-format">
+        <option value="온라인">온라인 위주로</option>
+        <option value="오프라인">오프라인도 괜찮음</option>
+        <option value="무관" selected>형태 상관없음</option>
+      </select>
+    </div>
+  </div>
+  <div class="field" style="margin-bottom:12px">
+    <label>관심 분야 (복수 선택 가능, 비워두면 글에서 자동 인식)</label>
+    <div class="chipset" id="pref-interests">
+      <label><input type="checkbox" value="경진대회"> 경진대회</label>
+      <label><input type="checkbox" value="교육과정/실습"> 교육과정·실습</label>
+      <label><input type="checkbox" value="서포터즈"> 서포터즈</label>
+      <label><input type="checkbox" value="학부연구생/연구"> 학부연구생·연구</label>
+      <label><input type="checkbox" value="현장체험/세미나"> 현장체험·세미나</label>
+      <label><input type="checkbox" value="취업정보/장학"> 취업정보·장학</label>
+      <label><input type="checkbox" value="산학프로그램"> 산학프로그램</label>
+    </div>
+  </div>
+  <div class="field" style="margin-bottom:14px">
+    <label>지금 이 활동을 하는 목적 (복수 선택 가능, 비워두면 글에서 자동 인식)</label>
+    <div class="chipset" id="pref-purposes">
+      <label><input type="checkbox" value="스펙강화"> 스펙/포트폴리오 강화</label>
+      <label><input type="checkbox" value="실무경험"> 실무 경험 쌓기</label>
+      <label><input type="checkbox" value="취업연계"> 취업·채용 연계</label>
+      <label><input type="checkbox" value="네트워킹"> 네트워킹·현장감</label>
+      <label><input type="checkbox" value="비용지원"> 장학금·비용지원</label>
+    </div>
+  </div>
+  </div>
+
+  <button class="reco-btn" id="reco-run">내 상황 분석해서 추천받기</button>
+  <div class="reco-results" id="reco-results"></div>
+</div>
+
+<div class="section-title">📋 전체 활동 목록</div>
+<div class="stats" id="stats"></div>
+<div class="controls"><input id="q" placeholder="활동명·기관·키워드 검색"><select id="cat"><option value="">전체</option><option>교내</option><option>교외</option></select></div>
+<div class="grid" id="list"></div>
+</div>
+
+<div class="tab-panel" id="panel-news">
+<div class="section-title">📊 반도체 시장 현황</div>
+<p class="market-note" id="market-asof"></p>
+<div class="market-grid" id="market-indicators"></div>
+
+<div class="section-title">📰 나에게 맞는 뉴스 추천</div>
+<div class="reco">
+  <p class="reco-sub">내 상황을 적어주면 어떤 뉴스부터 읽으면 좋을지 순서를 매겨드려요. (위에서 이미 적었다면 아래 버튼만 눌러도 돼요)</p>
+  <div class="free-text-field">
+    <label>내 상황 / 관심사</label>
+    <textarea id="news-pref-freetext" placeholder="예) 장비 엔지니어 지망이라 설비 투자나 공급망 이슈가 궁금해요. 취업 준비 중이라 채용·실적 뉴스도 관심 있어요.">신소재공학부 3학년이고, 반도체 중에서 장비 엔지니어 쪽으로 가고 싶어요.</textarea>
+    <p class="free-text-hint">관심 있는 주제(가격동향/실적/패키징/정책투자/주가시장심리/HBM/시장점유율/공급망 등)나 직무, 목적을 적어주시면 그 뉴스부터 우선순위로 올려드려요.</p>
+  </div>
+  <button class="reco-btn" id="news-reco-run">이 순서로 뉴스 추천받기</button>
+  <div class="reco-results" id="news-reco-results"></div>
+</div>
+
+<div class="section-title">📰 전체 뉴스 목록 (최신순)</div>
+<p class="market-note">실제 기사 링크입니다. 요약은 원문을 제가 다시 풀어쓴 것이라 정확한 수치·인용은 원문에서 확인하세요.</p>
+<div class="news-list" id="news-list"></div>
+</div>
+</div>
+<script>
+/* 데이터를 파일에 직접 내장해서 서버 없이 더블클릭으로도 동작하게 함 (fetch+CORS 문제 회피) */
+const DATA = [
+  {
+    "id": "jnu-amkor-tour",
+    "category": "교내",
+    "title": "반도체 산업 연계 초광역 기업탐방 - 앰코테크놀로지코리아 송도사업장",
+    "org": "전남대학교",
+    "date": "2026-08-25 ~ 2026-08-26",
+    "deadline": null,
+    "status": "진행 중(모집은 마감된 것으로 추정)",
+    "type": "현장체험",
+    "interestBucket": "현장체험/세미나",
+    "target": [
+      "전학년"
+    ],
+    "isLocal": true,
+    "region": "광주·전남 → 인천(송도)",
+    "format": "오프라인",
+    "cost": "무료(추정)",
+    "tags": [
+      "기업탐방",
+      "OSAT",
+      "반도체 후공정",
+      "전남대"
+    ],
+    "url": "https://mse.jnu.ac.kr/eng/7343/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGZW5nJTJGOTkzJTJGMTA1MDUyMiUyRmFydGNsVmlldy5kbyUzRg%3D%3D",
+    "note": "전남대 재학생 대상 반도체 후공정 산업 이해·생산 및 품질관리 공정 견학. 일정상 오늘~내일 진행이라 신규 신청은 마감됐을 가능성이 큽니다. 다음 기수 개설 여부를 확인해보세요."
+  },
+  {
+    "id": "jnu-expert-seminar-2026-1",
+    "category": "교내",
+    "title": "2026학년도 1학기 반도체 전문가 초청 세미나",
+    "org": "전남대학교 반도체특성화대학사업단",
+    "date": "2026-03-23 ~ 2026-06-15",
+    "deadline": null,
+    "status": "종료",
+    "type": "세미나",
+    "interestBucket": "현장체험/세미나",
+    "target": [
+      "전학년"
+    ],
+    "isLocal": true,
+    "region": "광주·전남",
+    "format": "오프라인",
+    "cost": "무료",
+    "tags": [
+      "반도체특강",
+      "기업",
+      "패키징",
+      "AI"
+    ],
+    "url": "https://mse.jnu.ac.kr/bbs/mse/2060/977103/artclView.do",
+    "note": "에이직랜드·SOSLab·앰코테크놀로지 등 전문가 초청. 1학기 시리즈는 끝났지만 2학기 시리즈가 이어질 가능성이 높아 사업단 공지사항을 주기적으로 확인하는 걸 추천합니다."
+  },
+  {
+    "id": "jnu-need-lab",
+    "category": "교내",
+    "title": "나노소재 전자소자 연구실(NEED Lab) 학부연구생 모집",
+    "org": "전남대학교 신소재공학부",
+    "date": "2026-06-29 ~ 2026-07-03",
+    "deadline": "2026-07-03",
+    "status": "마감(최신 공고로 대체됨 - 아래 8/24 공고 참고)",
+    "type": "학부연구생",
+    "interestBucket": "학부연구생/연구",
+    "target": [
+      "3~4학년"
+    ],
+    "isLocal": true,
+    "region": "광주·전남",
+    "format": "오프라인",
+    "cost": "무료(장학/인건비 지원 가능성 있음)",
+    "tags": [
+      "학부연구생",
+      "ALD",
+      "스퍼터",
+      "리소그래피"
+    ],
+    "url": "https://mse.jnu.ac.kr/mse/16863/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGbXNlJTJGMjA2MCUyRjEwNDgyNjYlMkZhcnRjbFZpZXcuZG8lM0Y%3D",
+    "note": "이 회차는 마감됐지만, 같은 연구실에서 2026-08-24에 새 모집 공고가 올라온 걸 확인했습니다. 바로 아래 항목을 확인하세요."
+  },
+  {
+    "id": "jnu-need-lab-2026-08",
+    "category": "교내",
+    "title": "나노소재 전자소자 연구실 대학원생 및 학부연구생 모집 (차세대 반도체 소자 / EV 방열 소재 분야 각 1명, 지도교수 이영환)",
+    "org": "전남대학교 신소재공학부",
+    "date": "게시 2026-08-24",
+    "deadline": null,
+    "status": "모집중(마감일 미표기 - 상시/수시 모집으로 추정)",
+    "type": "학부연구생",
+    "interestBucket": "학부연구생/연구",
+    "target": [
+      "3~4학년"
+    ],
+    "isLocal": true,
+    "region": "광주·전남",
+    "format": "오프라인",
+    "cost": "무료(대학원생은 인건비 지원 가능)",
+    "tags": [
+      "학부연구생",
+      "대학원생",
+      "차세대반도체소자",
+      "EV방열소재"
+    ],
+    "url": "https://mse.jnu.ac.kr/bbs/mse/2060/1052676/artclView.do?layout=unknown",
+    "note": "실제 수집기(collector.py)가 2026-08-25 실행에서 새로 찾아낸 공고입니다. 대학원 진학을 목표로 연구 기초를 다지고 싶은 3~4학년에게 맞는 자리입니다. 정확한 마감일은 원문에서 확인하세요."
+  },
+  {
+    "id": "jnu-stob-league-2026",
+    "category": "교내",
+    "title": "2026 STOB리그 반도체 경진대회 참가팀 모집 안내",
+    "org": "전남대학교 반도체특성화대학사업단",
+    "date": "게시 2026-07-15 (교육부·KIAT·한국반도체산업협회 주관 전국 대회)",
+    "deadline": null,
+    "status": "참가팀 모집 마감 추정 · 경진대회 자체는 7~8월 진행 중일 가능성",
+    "type": "경진대회",
+    "interestBucket": "경진대회",
+    "target": [
+      "전학년"
+    ],
+    "isLocal": true,
+    "region": "전국(전남대 학생 참가)",
+    "format": "온오프 병행",
+    "cost": "무료(팀 활동비 지원 사례 있음)",
+    "tags": [
+      "경진대회",
+      "STOB리그",
+      "반도체프로젝트",
+      "전국단위"
+    ],
+    "url": "https://www.juice-semi.kr/jnu/main/",
+    "note": "반도체프로젝트 교과 수강생(교과팀)과 비수강생(비교과팀) 모두 참가 가능한 구조입니다. 이번 회차를 놓쳤다면 다음 학기/차년도 회차를 노려볼 만합니다."
+  },
+  {
+    "id": "jnu-capability-support-2026",
+    "category": "교내",
+    "title": "2026년 능력향상지원프로그램 운영 안내",
+    "org": "전남대학교 반도체특성화대학사업단",
+    "date": "2026-04-15 ~ 2026-12-31",
+    "deadline": "2026-12-31",
+    "status": "모집중",
+    "type": "장학/지원사업",
+    "interestBucket": "취업정보/장학",
+    "target": [
+      "3~4학년"
+    ],
+    "isLocal": true,
+    "region": "광주·전남",
+    "format": "정보 확인 필요",
+    "cost": "무료(지원금)",
+    "tags": [
+      "능력향상지원",
+      "반도체융합전공",
+      "장학"
+    ],
+    "url": "https://www.juice-semi.kr/jnu/main/",
+    "note": "반도체 융합전공 재학생 대상, 서류 제출기한이 2026-12-31까지로 아직 여유가 있는 몇 안 되는 상시 모집형 프로그램입니다."
+  },
+  {
+    "id": "jnu-ansys-online",
+    "category": "교내",
+    "title": "반도체 패키징 Ansys 온라인 교육과정 안내",
+    "org": "전남대학교 반도체특성화대학사업단",
+    "date": "상시(Ansys 오프라인 워크숍 수료자 대상 심화학습)",
+    "deadline": null,
+    "status": "상시 이용 가능(기참여자 대상)",
+    "type": "교육과정",
+    "interestBucket": "교육과정/실습",
+    "target": [
+      "3~4학년"
+    ],
+    "isLocal": true,
+    "region": "광주·전남",
+    "format": "온라인",
+    "cost": "무료",
+    "tags": [
+      "Ansys",
+      "패키징",
+      "시뮬레이션",
+      "심화학습"
+    ],
+    "url": "https://www.juice-semi.kr/jnu/main/",
+    "note": "신규 모집이 아니라 기존 Ansys 교육 참여자의 복습·심화용 콘텐츠입니다. 아직 오프라인 워크숍을 안 들었다면 다음 기수 공고를 확인하세요."
+  },
+  {
+    "id": "jnu-job-guide",
+    "category": "교내",
+    "title": "교내 취업 프로그램 활용 가이드 (자소서·코멘토 등)",
+    "org": "전남대학교 반도체특성화대학사업단",
+    "date": "상시 게시",
+    "deadline": null,
+    "status": "상시 이용 가능",
+    "type": "채용정보",
+    "interestBucket": "취업정보/장학",
+    "target": [
+      "3~4학년",
+      "졸업예정/취준생"
+    ],
+    "isLocal": true,
+    "region": "광주·전남",
+    "format": "온라인",
+    "cost": "무료",
+    "tags": [
+      "자소서",
+      "코멘토",
+      "취업진로"
+    ],
+    "url": "https://www.juice-semi.kr/jnu/main/",
+    "note": "학교 메인포털 > 교육지원 > 취업진로 경로로 접속. 자소서는 3학년부터 미리 써보고 다듬어가라는 게 사업단의 공식 권장사항입니다."
+  },
+  {
+    "id": "ksia-academy-2026",
+    "category": "교외",
+    "title": "2026 반도체 아카데미 교육 프로그램 (연간 총괄)",
+    "org": "한국반도체아카데미",
+    "date": "2026 연간 일정",
+    "deadline": null,
+    "status": "과정별 모집 상태 확인 필요",
+    "type": "교육과정",
+    "interestBucket": "교육과정/실습",
+    "target": [
+      "전학년",
+      "졸업예정/취준생"
+    ],
+    "isLocal": false,
+    "region": "전국(과정별 상이)",
+    "format": "오프라인 위주",
+    "cost": "과정별 상이(무료~일부 유료)",
+    "tags": [
+      "학생",
+      "취업준비생",
+      "직무교육"
+    ],
+    "url": "https://academy.ksia.or.kr/lecture/curriculum",
+    "note": "2026년 교육과정 총괄표가 공개돼 있고, 개별 과정 페이지에서 신청 상태를 확인해야 합니다. 아래 항목들은 이 총괄표에서 나온 개별 과정 예시입니다."
+  },
+  {
+    "id": "ksia-equip-control-sw",
+    "category": "교외",
+    "title": "차세대 반도체 장비 제어 및 SW 전문가 양성과정",
+    "org": "한국반도체아카데미",
+    "date": "신청 2026-05-08 ~ 05-29 / 교육 2026-06-22 ~ 08-28",
+    "deadline": "2026-05-29",
+    "status": "종료",
+    "type": "교육과정",
+    "interestBucket": "교육과정/실습",
+    "target": [
+      "3~4학년",
+      "졸업예정/취준생"
+    ],
+    "isLocal": false,
+    "region": "전국",
+    "format": "오프라인",
+    "cost": "확인 필요",
+    "tags": [
+      "장비",
+      "제어",
+      "SW",
+      "330시간"
+    ],
+    "url": "https://academy.ksia.or.kr/lecture/offline/detail/591",
+    "note": "이번 기수는 끝났지만 330시간짜리 장기 실무과정으로, 동일 과정이 반기별로 재개설되는 경우가 많습니다."
+  },
+  {
+    "id": "ksia-power-semi-adv",
+    "category": "교외",
+    "title": "전력반도체 소자공정 및 패키징 실습교육 - 심화",
+    "org": "한국반도체아카데미 / 부산테크노파크",
+    "date": "신청 2026-06-05 ~ 06-26 / 교육 2026-07-13 ~ 08-14",
+    "deadline": "2026-06-26",
+    "status": "종료",
+    "type": "교육과정",
+    "interestBucket": "교육과정/실습",
+    "target": [
+      "3~4학년",
+      "졸업예정/취준생"
+    ],
+    "isLocal": false,
+    "region": "부산·경남",
+    "format": "오프라인",
+    "cost": "확인 필요",
+    "tags": [
+      "전력반도체",
+      "패키징",
+      "심화"
+    ],
+    "url": "https://academy.ksia.or.kr/lecture/curriculum",
+    "note": "심화과정이라 기초과정 이수 여부를 먼저 확인해야 합니다."
+  },
+  {
+    "id": "ksia-data-science-1",
+    "category": "교외",
+    "title": "반도체 Data Science 전문가 양성과정 1차",
+    "org": "한국반도체아카데미",
+    "date": "신청 2026-04-16 ~ 04-30 / 교육 2026-05-06 ~ 05-13",
+    "deadline": "2026-04-30",
+    "status": "마감",
+    "type": "교육과정",
+    "interestBucket": "교육과정/실습",
+    "target": [
+      "3~4학년",
+      "졸업예정/취준생"
+    ],
+    "isLocal": false,
+    "region": "전국",
+    "format": "오프라인",
+    "cost": "확인 필요",
+    "tags": [
+      "Data Science",
+      "반도체",
+      "1차"
+    ],
+    "url": "https://academy.ksia.or.kr/lecture/curriculum",
+    "note": "공정 데이터 분석에 관심 있으면 2차/3차 기수가 열리는지 확인해보세요."
+  },
+  {
+    "id": "ksia-package-test-basic",
+    "category": "교외",
+    "title": "반도체 패키지 테스트 공정기술 기초과정",
+    "org": "한국반도체아카데미",
+    "date": "신청 2026-04-06 ~ 04-27 / 교육 2026-05-11 ~ 05-21",
+    "deadline": "2026-04-27",
+    "status": "마감",
+    "type": "교육과정",
+    "interestBucket": "교육과정/실습",
+    "target": [
+      "3~4학년",
+      "졸업예정/취준생"
+    ],
+    "isLocal": false,
+    "region": "전국",
+    "format": "오프라인",
+    "cost": "확인 필요",
+    "tags": [
+      "패키지",
+      "테스트",
+      "기초"
+    ],
+    "url": "https://academy.ksia.or.kr/lecture/curriculum",
+    "note": "기초과정이라 전공 무관하게 입문용으로 좋습니다. 재개설 시기를 확인해보세요."
+  },
+  {
+    "id": "semi-korea-process-training-2026",
+    "category": "교외",
+    "title": "대학생을 위한 반도체공정실습교육 2026",
+    "org": "SEMI Korea (명지대 진행)",
+    "date": "2026년 중 (회차별 상이)",
+    "deadline": null,
+    "status": "회차별 모집 상태 확인 필요",
+    "type": "교육과정",
+    "interestBucket": "교육과정/실습",
+    "target": [
+      "졸업예정/취준생"
+    ],
+    "isLocal": false,
+    "region": "수도권(명지대)",
+    "format": "오프라인",
+    "cost": "확인 필요",
+    "tags": [
+      "반도체공정",
+      "실습",
+      "SEMI",
+      "명지대"
+    ],
+    "url": "https://www.semi.org/ko/connect/event/spt-hands-on-2026",
+    "note": "대상이 이공계 학부 4학년(6학기 이상 이수 휴학생 포함) 또는 교육 직전 연도 졸업생(2025~2026년 졸업생)으로 명확히 제한돼 있습니다. 재학 저학년은 아직 지원 대상이 아닙니다."
+  },
+  {
+    "id": "amat-reals",
+    "category": "교외",
+    "title": "대학생 서포터즈 프로그램 '리얼즈(Reals)'",
+    "org": "어플라이드 머티어리얼즈 코리아",
+    "date": "주로 방학 기간 운영(수시 공지)",
+    "deadline": null,
+    "status": "상시 확인 필요(공식 블로그에서 모집 공지)",
+    "type": "서포터즈",
+    "interestBucket": "서포터즈",
+    "target": [
+      "전학년"
+    ],
+    "isLocal": false,
+    "region": "전국",
+    "format": "오프라인 위주",
+    "cost": "무료",
+    "tags": [
+      "서포터즈",
+      "반도체",
+      "디스플레이",
+      "글로벌기업"
+    ],
+    "url": "https://www.appliedmaterials.com/kr/ko/careers/university-recruiting-programs.html",
+    "note": "반도체·디스플레이 산업과 글로벌 기업 진로를 희망하는 대학생 대상. 유급 인턴십 'APPLIEDer'도 같은 채널에서 운영되니 채용공고도 같이 확인하면 좋습니다."
+  },
+  {
+    "id": "yongin-semi-workforce-2026",
+    "category": "교외",
+    "title": "2026년 반도체 산업 전문인력 양성 교육",
+    "org": "용인시산업진흥원",
+    "date": "2026-04 ~ 2026-10 (매월 1~2회 회차)",
+    "deadline": null,
+    "status": "진행중(회차별 모집)",
+    "type": "교육과정",
+    "interestBucket": "교육과정/실습",
+    "target": [
+      "3~4학년",
+      "졸업예정/취준생"
+    ],
+    "isLocal": false,
+    "region": "경기(용인)",
+    "format": "오프라인",
+    "cost": "1기 무료 / 2기 15만원(자부담)",
+    "tags": [
+      "반도체이론",
+      "공정실습",
+      "장비실습",
+      "용인"
+    ],
+    "url": "https://ybs.ypa.or.kr/poratlAppFormDtl.do?regNo=RGS_0000000000000559",
+    "note": "용인 소재 기업 재직자·예비 취업자뿐 아니라 타 지역 대학 반도체 분야 전공자도 지원 가능하다고 명시돼 있어, 지방대생도 지원해볼 수 있는 몇 안 되는 과정입니다."
+  },
+  {
+    "id": "entegris-stem-innovator-2",
+    "category": "교외",
+    "title": "[인테그리스] STEM Innovator 2기 모집",
+    "org": "인테그리스(Entegris) - 글로벌 반도체 첨단소재 기업",
+    "date": "2026-04-24 ~ 2026-05-11",
+    "deadline": "2026-05-11",
+    "status": "종료",
+    "type": "산학프로그램",
+    "interestBucket": "산학프로그램",
+    "target": [
+      "3~4학년"
+    ],
+    "isLocal": false,
+    "region": "전국",
+    "format": "확인 필요",
+    "cost": "확인 필요",
+    "tags": [
+      "첨단소재",
+      "산학협력",
+      "STEM"
+    ],
+    "url": "https://mse.jnu.ac.kr/",
+    "note": "4학기 이상 이수자 대상 기수제 프로그램으로 추정됩니다. 2기까지 나왔으니 3기 공고를 인테그리스코리아 채용·산학 채널에서 확인해보세요."
+  },
+  {
+    "id": "postech-hwandonghae-2026",
+    "category": "교외",
+    "title": "POSTECH 환동해 글로컬 연합 아카데미 반도체 취업준비형 교육생 모집",
+    "org": "POSTECH 가치창출대학",
+    "date": "2026-04-27 ~ 2026-05-15",
+    "deadline": "2026-05-15",
+    "status": "종료",
+    "type": "교육과정",
+    "interestBucket": "교육과정/실습",
+    "target": [
+      "졸업예정/취준생"
+    ],
+    "isLocal": false,
+    "region": "대구·경북 우대(전국 지원 가능)",
+    "format": "온오프 병행",
+    "cost": "무료(교육지원금 제공)",
+    "tags": [
+      "반도체공정",
+      "취업준비형",
+      "만34세이하미취업자"
+    ],
+    "url": "https://www.postech.ac.kr/kor/newscenter/event.do?mode=view&articleNo=46314",
+    "note": "만 34세 이하 미취업자, 전문학사 이상 재학생·휴학생·졸업자 대상으로 전공 무관 지원 가능합니다. 대구·경북 거주자를 우대하지만 타 지역도 지원 자체는 가능했던 프로그램이라 하반기 재모집을 확인해볼 만합니다."
+  }
+];
+let data = DATA;
+
+const MARKET = {
+  "asOf": "2026-08-25",
+  "indicators": [
+    {
+      "label": "필라델피아 반도체지수(SOX)",
+      "value": "약 11,700pt대",
+      "asOf": "2026-08-19 기준",
+      "trend": "변동성 큼",
+      "note": "최근 한 달 새 급락과 급반등을 반복. 8/14 4~5%대 급등, 8/19 재차 조정 등 등락폭이 큰 상태.",
+      "source": "Investing.com",
+      "url": "https://kr.investing.com/indices/phlx-semiconductor"
+    },
+    {
+      "label": "삼성전자 2026년 2분기 영업이익",
+      "value": "약 89.4조원",
+      "asOf": "2026-07-07 잠정실적 기준",
+      "trend": "역대 최대",
+      "note": "매출 171조원, 영업이익 89조4천억원으로 분기 기준 역대 최대. 반도체(DS) 부문이 실적을 견인.",
+      "source": "삼성전자 공시(IR)",
+      "url": "https://www.welfarehello.com/community/policyInfo/%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90-2026%EB%85%84-2%EB%B6%84%EA%B8%B0-%EC%98%81%EC%97%85%EC%9D%B4%EC%9D%B5-89%EC%A1%B0%EC%9B%90-%EC%9E%A0%EC%A0%95%EC%8B%A4%EC%A0%81-%EC%B4%9D%EC%A0%95%EB%A6%AC--d9cead49-01b8-4c4b-a6ae-ee667f80ccb6"
+    },
+    {
+      "label": "SK하이닉스 2026년 2분기 영업이익",
+      "value": "약 60.5조원",
+      "asOf": "2026-07-29 확정실적 기준",
+      "trend": "분기 사상 최대",
+      "note": "매출 79조3,187억원, 영업이익률 76%. 상반기 누적 매출 사상 처음 100조원대 돌파. 전년 동기 대비 영업이익 557% 증가.",
+      "source": "SK hynix Newsroom",
+      "url": "https://news.skhynix.co.kr/q2-2026-business-results/"
+    },
+    {
+      "label": "DDR4 8Gb 고정거래가",
+      "value": "24달러",
+      "asOf": "2026년 8월 말 기준",
+      "trend": "역대 최고치 경신 중",
+      "note": "올해 1월 11.50달러에서 8월 24달러로 급등. HBM 생산 우선 배정으로 구형 D램 공급이 줄면서 가격이 밀려 올라가는 역설적 상황. 3분기에 50% 추가 상승 전망(모간스탠리).",
+      "source": "머니투데이 · The Guru(Investing.com)",
+      "url": "https://www.mt.co.kr/industry/2026/08/21/2026082019533932042"
+    },
+    {
+      "label": "DRAM 시장 점유율(2026년 2분기)",
+      "value": "삼성전자 39%",
+      "asOf": "2026년 8월 카운터포인트 발표",
+      "trend": "선두 유지, 2위 경쟁 치열",
+      "note": "SK하이닉스와 마이크론이 1%p 이내 초접전으로 2위 경쟁 중. 범용 D램 가격은 급등, HBM 가격은 HBM3E 하락·HBM4 지연 겹쳐 오히려 하락.",
+      "source": "카운터포인트리서치",
+      "url": "https://korea.counterpointresearch.com/samsung-dram-market-share-q2-2026/"
+    }
+  ],
+  "news": [
+    {
+      "title": "최태원 \"마진율 내려야 하나\" 걱정…돈 쓸어담는 삼전닉스, 못 웃는 이유",
+      "source": "머니투데이",
+      "date": "2026-08-24",
+      "summary": "역대급 호황 속에서도 중국 메모리 기업들의 IPO 러시와 엔비디아의 가격 인상 압박 등 불안 요인이 함께 커지고 있다는 분석입니다.",
+      "url": "https://www.mt.co.kr/industry/2026/08/24/2026082415344234551",
+      "tags": [
+        "실적",
+        "주가시장심리",
+        "리스크",
+        "경영"
+      ]
+    },
+    {
+      "title": "HBM 열풍의 역설… 구형 D램 '귀하신 몸'",
+      "source": "머니투데이",
+      "date": "2026-08-21",
+      "summary": "삼성전자·SK하이닉스·마이크론이 HBM과 서버용 D램에 생산능력을 우선 배정하면서, 오히려 구형 DDR4 공급이 줄어 가격이 치솟고 있다는 내용입니다.",
+      "url": "https://www.mt.co.kr/industry/2026/08/21/2026082019533932042",
+      "tags": [
+        "가격동향",
+        "공급망",
+        "HBM",
+        "메모리"
+      ]
+    },
+    {
+      "title": "\"韓이 먼저 상용화했는데\"...첨단패키징 PLP 기술, 대만 TSMC에 종속되나",
+      "source": "전자신문",
+      "date": "2026-08-21",
+      "summary": "국내가 먼저 상용화한 첨단 패키징 기술의 주도권이 대만 TSMC 쪽으로 넘어갈 수 있다는 우려를 다룬 기사입니다.",
+      "url": "https://www.etnews.com/20260821000252",
+      "tags": [
+        "패키징",
+        "기술경쟁",
+        "파운드리"
+      ]
+    },
+    {
+      "title": "AI·반도체 '메가 프로젝트' 주마가편…이 대통령, 재계 총수 잇단 만남",
+      "source": "전자신문",
+      "date": "2026-08-24",
+      "summary": "정부가 반도체·AI 인프라 대규모 투자 프로젝트를 추진하며 대통령이 주요 기업 총수들과 잇달아 만나고 있다는 소식입니다.",
+      "url": "https://www.etnews.com/20260824000357",
+      "tags": [
+        "정책투자",
+        "정부",
+        "팹투자",
+        "공급망"
+      ]
+    },
+    {
+      "title": "[특징주] 반도체 상승세 지속…하이닉스 4~5%대 급등",
+      "source": "파이낸셜뉴스(연합뉴스)",
+      "date": "2026-08-14",
+      "summary": "미국 메모리 기업의 실적 서프라이즈 영향으로 삼성전자·SK하이닉스가 동반 급등했고, 필라델피아 반도체지수도 강세를 보였습니다.",
+      "url": "https://www.fnnews.com/news/202608140934224228",
+      "tags": [
+        "주가시장심리",
+        "실적기대"
+      ]
+    },
+    {
+      "title": "'반도체 투심' 회복에 SK하이닉스 장중 8% 급등…\"안심은 이르다\"",
+      "source": "MBC뉴스",
+      "date": "2026-08-11",
+      "summary": "미국 AI 클라우드·서버 기업들의 깜짝 실적 발표 이후 국내 반도체주가 동반 상승했지만, 금리 등 변수로 변동성은 여전하다는 진단입니다.",
+      "url": "https://imnews.imbc.com/replay/2026/nwdesk/article/6844601_37004.html",
+      "tags": [
+        "주가시장심리",
+        "금리",
+        "매크로"
+      ]
+    },
+    {
+      "title": "AI 수요 급증으로 재편된 2026년 2분기 DRAM 시장, 삼성 39% 점유율로 선두",
+      "source": "카운터포인트리서치",
+      "date": "2026-08",
+      "summary": "삼성전자가 범용 D램 수요·가격 상승과 HBM 점유율 확대 효과를 동시에 누리며 반등했고, 마이크론과 SK하이닉스의 2위 경쟁이 치열하다는 내용입니다.",
+      "url": "https://korea.counterpointresearch.com/samsung-dram-market-share-q2-2026/",
+      "tags": [
+        "시장점유율",
+        "가격동향",
+        "HBM",
+        "메모리"
+      ]
+    },
+    {
+      "title": "SK하이닉스, 2026년 2분기 경영실적 발표",
+      "source": "SK hynix Newsroom",
+      "date": "2026-07-29",
+      "summary": "매출·영업이익 모두 분기 사상 최대치를 기록했고, 용인 클러스터 등 중장기 투자를 설비투자 원칙을 유지하며 단계적으로 추진하겠다고 밝혔습니다.",
+      "url": "https://news.skhynix.co.kr/q2-2026-business-results/",
+      "tags": [
+        "실적",
+        "투자계획",
+        "팹투자",
+        "메모리",
+        "공급망"
+      ]
+    }
+  ]
+};
+
+function renderMarket(){
+  document.getElementById('market-asof').textContent = `${MARKET.asOf} 기준 스냅샷 (자동 실시간 갱신 아님 — 매번 확인해서 업데이트해야 함)`;
+  document.getElementById('market-indicators').innerHTML = MARKET.indicators.map(i => `
+    <div class="ind-card">
+      <div class="ind-label">${i.label}</div>
+      <div class="ind-value">${i.value}</div>
+      <div class="ind-trend">${i.trend} · ${i.asOf}</div>
+      <div class="ind-note">${i.note}</div>
+      <div class="ind-src"><a href="${i.url}" target="_blank">출처: ${i.source} →</a></div>
+    </div>`).join('');
+
+  document.getElementById('news-list').innerHTML = MARKET.news.map(n => `
+    <div class="news-item">
+      <div class="news-date">${n.date}</div>
+      <div class="news-body">
+        <h4><span class="news-src">${n.source}</span>${n.title}</h4>
+        <p>${n.summary}</p>
+        <a class="news-link" href="${n.url}" target="_blank">원문 보기 →</a>
+      </div>
+    </div>`).join('');
+}
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+
+function resolveDeadlineInfo(item){
+  if(item.deadline) return {date:item.deadline, estimated:false};
+  const dateStr = item.date || '';
+  // "~"로 이어진 기간 표기가 있을 때만 마지막 날짜를 마감/종료일 추정치로 사용.
+  // "게시 2026-08-24"처럼 날짜가 하나뿐이면 그건 게시일이지 마감일이 아니므로 추정하지 않음.
+  if(!dateStr.includes('~')) return null;
+  const matches = dateStr.match(/\d{4}-\d{2}-\d{2}/g);
+  if(matches && matches.length >= 2){
+    return {date: matches[matches.length-1], estimated:true};
+  }
+  return null;
+}
+
+function computeDday(item){
+  if(!item.deadline) return null;
+  const dl = new Date(item.deadline + 'T00:00:00');
+  return Math.round((dl - TODAY) / 86400000);
+}
+
+function computeDdayDisplay(item){
+  const info = resolveDeadlineInfo(item);
+  if(!info) return null;
+  const dl = new Date(info.date + 'T00:00:00');
+  const diff = Math.round((dl - TODAY) / 86400000);
+  return {diff, date:info.date, estimated:info.estimated};
+}
+
+function ddayBadge(item){
+  const disp = computeDdayDisplay(item);
+  if(!disp){
+    return `<span class="badge dday dday-none">마감일 정보 없음(상시·수시)</span>`;
+  }
+  const {diff:d, date, estimated} = disp;
+  let cls='dday-normal', label='';
+  if(d < 0){ cls='dday-over'; label = `마감 D+${-d}`; }
+  else if(d === 0){ cls='dday-urgent'; label = 'D-DAY'; }
+  else if(d <= 3){ cls='dday-urgent'; label = `D-${d}`; }
+  else if(d <= 7){ cls='dday-soon'; label = `D-${d}`; }
+  else { cls='dday-normal'; label = `D-${d}`; }
+  const suffix = estimated ? ' 추정' : '마감';
+  return `<span class="badge dday ${cls}">${label} (${date}${suffix})</span>`;
+}
+
+/* deadline이 있는 항목은 "오늘" 기준으로 실제 마감 여부를 다시 계산해서
+   status 텍스트가 오래돼 있어도 정확한 상태를 우선한다.
+   (공식 deadline 필드가 있을 때만 상태 판단에 반영 - 추정치는 배지 표시에만 사용) */
+function effectiveIsOpen(item){
+  const d = computeDday(item);
+  if(d===null) return null; // 마감일 정보 없음 -> 판단 불가, 원래 status 텍스트를 따름
+  return d >= 0;
+}
+
+function load(){render(); renderMarket();
+  const todayStr = TODAY.toISOString().slice(0,10);
+  document.getElementById('today-note').textContent = `오늘: ${todayStr} 기준으로 마감일(D-day)을 계산합니다. 공식 마감일이 없는 항목은 게시된 날짜에서 추정하거나 "정보 없음"으로 표시됩니다.`;
+}
+
+function statusClass(x){
+  const status = typeof x === 'string' ? x : x.status;
+  const open = typeof x === 'string' ? null : effectiveIsOpen(x);
+  if(open === true) return 'status-active';
+  if(open === false) return 'status-closed';
+  if(status.includes('모집중')||status.includes('진행중')||status.includes('이용 가능')) return 'status-active';
+  if(status.includes('마감')||status.includes('종료')) return 'status-closed';
+  return 'status-check';
+}
+
+function cardHTML(x){
+  return `<article class=card><div class=top><span class=badge>${x.category}</span><span class='badge ${statusClass(x)}'>${x.status}</span>${ddayBadge(x)}</div><h3>${x.title}</h3><p><b>${x.org}</b><br>📅 ${x.date}</p><div class=tags>${x.tags.map(t=>`<span class=tag>${t}</span>`).join('')}</div><p>${x.note}</p><a class=link href="${x.url}" target="_blank">공식 원문 확인 →</a></article>`;
+}
+
+function render(){
+  let q=qEl.value.toLowerCase(),c=cat.value;
+  let f=data.filter(x=>(!c||x.category===c)&&JSON.stringify(x).toLowerCase().includes(q));
+  stats.innerHTML=`<div class=stat><b>${data.length}</b>전체 DB</div><div class=stat><b>${data.filter(x=>x.category==='교내').length}</b>전남대(교내)</div><div class=stat><b>${data.filter(x=>x.category==='교외').length}</b>교외</div>`;
+  list.innerHTML=f.map(cardHTML).join('')||'<p>검색 결과가 없습니다.</p>';
+}
+
+/* ===== 자유 서술 텍스트 파싱 엔진 ===== */
+
+function detectYearFromText(text){
+  if(/졸업\s*예정|취준|취업\s*준비|졸업생|졸업했/.test(text)) return '졸업예정/취준생';
+  if(/[34]\s*학년|고학년/.test(text)) return '3~4학년';
+  if(/[12]\s*학년|저학년|신입생/.test(text)) return '1~2학년';
+  return null;
+}
+
+const INTEREST_KEYWORDS = {
+  '경진대회': ['경진대회','공모전','대회','해커톤'],
+  '교육과정/실습': ['교육','실습','과정','부트캠프','트레이닝','장비','공정','설계','패키징','테스트','소재','데이터','펩리스','파운드리'],
+  '서포터즈': ['서포터즈','기자단','앰버서더'],
+  '학부연구생/연구': ['학부연구생','연구실','대학원','연구원','랩실'],
+  '현장체험/세미나': ['세미나','특강','설명회','기업탐방','견학','현장'],
+  '취업정보/장학': ['채용','취업','장학','장학금','자소서','면접','인턴'],
+  '산학프로그램': ['산학','인턴십','기업연계']
+};
+
+function detectInterestsFromText(text){
+  const hits = new Set();
+  for(const [bucket, kws] of Object.entries(INTEREST_KEYWORDS)){
+    if(kws.some(k=>text.includes(k))) hits.add(bucket);
+  }
+  return Array.from(hits);
+}
+
+const PURPOSE_KEYWORDS = {
+  '스펙강화': ['스펙','포트폴리오','경력'],
+  '실무경험': ['실무','경험','실습'],
+  '취업연계': ['취업','채용','입사','연계'],
+  '네트워킹': ['네트워킹','인맥','현장감','교류'],
+  '비용지원': ['장학금','비용','지원금','무료']
+};
+
+function detectPurposesFromText(text){
+  const hits = new Set();
+  for(const [p, kws] of Object.entries(PURPOSE_KEYWORDS)){
+    if(kws.some(k=>text.includes(k))) hits.add(p);
+  }
+  return Array.from(hits);
+}
+
+const STOPWORDS = new Set(['그리고','위주로','있어요','싶어요','합니다','해서','으로','에서','까지','부터','정도','관심','희망','찾고','편해요','에요','이고','통학','가능하고','가능해요','위해','대한','저는','제가','이며','정도로','이나','으면','같아요']);
+
+function tokenizeFreeText(text){
+  return Array.from(new Set(
+    text.split(/[^가-힣a-zA-Z0-9]+/).filter(w => w.length >= 2 && !STOPWORDS.has(w))
+  ));
+}
+
+function activitySearchText(x){
+  return [x.title, x.note, x.org, x.type, x.interestBucket, ...(x.tags||[])].join(' ');
+}
+
+function freeTextMatch(x, tokens){
+  if(!tokens.length) return {bonus:0, matched:[]};
+  const text = activitySearchText(x);
+  const matched = tokens.filter(t => text.includes(t));
+  const bonus = Math.min(20, matched.length * 5);
+  return {bonus, matched};
+}
+
+/* 목적 ↔ 활동 유형(interestBucket) 매핑: "이 활동이 그 목적에 실제로 도움이 되는가"를 연결 */
+const PURPOSE_MAP = {
+  '스펙강화': ['경진대회','산학프로그램','서포터즈','학부연구생/연구'],
+  '실무경험': ['교육과정/실습','학부연구생/연구','서포터즈'],
+  '취업연계': ['취업정보/장학','산학프로그램','교육과정/실습'],
+  '네트워킹': ['현장체험/세미나','서포터즈','산학프로그램'],
+  '비용지원': ['취업정보/장학','교육과정/실습']
+};
+
+/* 배점: 상태35 + 학년20 + 관심분야20 + 목적15 + 형태6 + 지역4 + 자유텍스트 키워드(최대20) = 최대 120점 -> 100 클램프 */
+function scoreItem(x, prefs, tokens){
+  let raw=0, reasons=[];
+  const dday = computeDday(x);
+  const open = effectiveIsOpen(x);
+
+  if(open === true || (open===null && (x.status.includes('모집중')||x.status.includes('진행중')))){
+    raw+=35; reasons.push('✅ 지금 지원·참여 가능');
+    if(dday!==null && dday<=7){ raw+=8; reasons.push(`⏰ 마감 임박(D-${dday}) — 서두르세요`); }
+  } else if(open === false){
+    reasons.push(`⏱ 이미 마감(오늘 기준 D+${-dday}) — 재개설 여부 확인용`);
+  } else if(x.status.includes('확인 필요')||x.status.includes('이용 가능')){
+    raw+=18; reasons.push('🔍 모집 여지 있음(원문에서 재확인 필요)');
+  } else {
+    reasons.push('⏱ 이번 회차는 마감/종료(재개설 여부 확인용)');
+  }
+
+  if(x.target.includes(prefs.year)||x.target.includes('전학년')){
+    raw+=20; reasons.push('🎓 내 학년·상태 조건에 맞음');
+  }
+
+  if(prefs.interests.includes(x.interestBucket)){
+    raw+=20; reasons.push('💡 관심 분야 일치: '+x.interestBucket);
+  }
+
+  const matchedPurpose = prefs.purposes.find(p => (PURPOSE_MAP[p]||[]).includes(x.interestBucket));
+  if(matchedPurpose){
+    raw+=15; reasons.push('🎯 목적에 도움됨: '+matchedPurpose);
+  }
+
+  if(prefs.format==='온라인' && x.format.includes('온라인')){ raw+=6; reasons.push('💻 온라인으로 참여 가능'); }
+  else if(prefs.format==='오프라인' && x.format.includes('오프라인')){ raw+=6; reasons.push('🏫 오프라인 참여 형태와 맞음'); }
+  else if(prefs.format==='무관'){ raw+=3; }
+
+  if(prefs.region==='광주전남' && x.isLocal){ raw+=4; reasons.push('📍 광주·전남 지역 활동'); }
+  else if(prefs.region==='무관'){ raw+=2; }
+
+  const ft = freeTextMatch(x, tokens || []);
+  if(ft.bonus > 0){
+    raw += ft.bonus;
+    reasons.push('🔎 입력하신 내용과 일치: ' + ft.matched.slice(0,4).join(', '));
+  }
+
+  const pct = Math.max(0, Math.min(100, Math.round(raw)));
+  return {pct, reasons, matchedPurpose};
+}
+
+function tierInfo(pct){
+  if(pct>=65) return {cls:'tier-high', label:'⭐ 강력 추천'};
+  if(pct>=40) return {cls:'tier-mid', label:'👍 추천'};
+  return {cls:'tier-low', label:'참고용'};
+}
+
+function buildSummary(x, r, pct, year){
+  const parts=[];
+  const dday = computeDday(x);
+  const open = effectiveIsOpen(x);
+
+  if(open === true){
+    parts.push(dday<=3 ? `마감이 D-${dday}로 코앞이라 서둘러야 하고` : `아직 D-${dday} 남아 지원 여유가 있고`);
+  } else if(open === false){
+    parts.push(`이 회차는 오늘(${TODAY.toISOString().slice(0,10)}) 기준으로 이미 마감(D+${-dday})됐지만`);
+  } else if(x.status.includes('모집중')||x.status.includes('진행중')){
+    parts.push('지금 바로 지원할 수 있는 상태이고');
+  } else if(x.status.includes('확인 필요')||x.status.includes('이용 가능')){
+    parts.push('모집 상태를 원문에서 다시 확인해봐야 하지만');
+  } else {
+    parts.push('이번 회차는 이미 마감됐지만');
+  }
+
+  if(x.target.includes(year)||x.target.includes('전학년')) parts.push('내 학년 조건에도 맞고');
+  if(r.matchedPurpose) parts.push(`'${r.matchedPurpose}' 목적에 실질적으로 도움이 되는 활동이라`);
+
+  let verdict = pct>=65 ? '적극 지원을 권해드려요.' : (pct>=40 ? '한 번쯤 검토해볼 만해요.' : '지금 내 상황과는 다소 거리가 있어요.');
+  return parts.join(' ') + ' ' + verdict;
+}
+
+function runRecommend(){
+  const freeText = (document.getElementById('pref-freetext').value || '').trim();
+
+  const manualYear = document.getElementById('pref-year').value;
+  const detectedYear = detectYearFromText(freeText);
+  const year = manualYear || detectedYear || '3~4학년';
+
+  const manualInterests = Array.from(document.querySelectorAll('#pref-interests input:checked')).map(el=>el.value);
+  const detectedInterests = detectInterestsFromText(freeText);
+  const interests = manualInterests.length ? manualInterests : (detectedInterests.length ? detectedInterests : ['교육과정/실습']);
+
+  const manualPurposes = Array.from(document.querySelectorAll('#pref-purposes input:checked')).map(el=>el.value);
+  const detectedPurposes = detectPurposesFromText(freeText);
+  const purposes = manualPurposes.length ? manualPurposes : detectedPurposes;
+
+  const region = document.getElementById('pref-region').value;
+  const format = document.getElementById('pref-format').value;
+  const tokens = tokenizeFreeText(freeText);
+
+  const prefs = {year, region, format, interests, purposes};
+
+  const ranked = data.map(x=>{
+    const r = scoreItem(x, prefs, tokens);
+    return {x, ...r};
+  }).sort((a,b)=>b.pct-a.pct);
+
+  const box=document.getElementById('reco-results');
+  const highCount = ranked.filter(r=>r.pct>=65).length;
+
+  const parsedBits = [`학년: ${year}`];
+  if(interests.length) parsedBits.push('관심분야: '+interests.join(', '));
+  if(purposes.length) parsedBits.push('목적: '+purposes.join(', '));
+  if(tokens.length) parsedBits.push('인식된 키워드: '+tokens.slice(0,8).join(', '));
+
+  box.innerHTML = `<p class="parsed-note">🧭 입력하신 내용에서 이렇게 이해했어요 — ${parsedBits.join(' · ')}${manualYear||manualInterests.length||manualPurposes.length ? ' (아래 세부 조건 직접 선택 반영됨)' : ''}</p>`
+    + `<p class="reco-list-note">전체 ${ranked.length}건을 분석했고, 그중 <b>${highCount}건</b>이 지금 내 상황과 강하게 맞아요. 추천도가 높은 순으로 정렬했습니다.</p>`
+    + ranked.map(r=>{
+        const t = tierInfo(r.pct);
+        return `
+      <div class="reco-card ${t.cls}">
+        <div class="match-head">
+          <div class="match-score"><b>${r.pct}%</b><div class="match-bar-track"><div class="match-bar-fill" style="width:${r.pct}%"></div></div></div>
+          <span class="tier-label">${t.label}</span>
+        </div>
+        <div class="top"><span class="badge">${r.x.category}</span><span class="badge ${statusClass(r.x)}">${r.x.status}</span>${ddayBadge(r.x)}</div>
+        <h4>${r.x.title}</h4>
+        <div class="reco-meta">${r.x.org} · 📅 ${r.x.date}</div>
+        <p class="match-summary">${buildSummary(r.x, r, r.pct, year)}</p>
+        <div>${r.reasons.map(rs=>`<span class="reason">${rs}</span>`).join('')}</div>
+        <p>${r.x.note}</p>
+        <a class="link" href="${r.x.url}" target="_blank">공식 원문 확인 →</a>
+      </div>`;
+      }).join('');
+  box.classList.add('show');
+}
+
+document.getElementById('detail-toggle').addEventListener('click', function(){
+  const df = document.getElementById('detail-fields');
+  df.classList.toggle('show');
+  this.textContent = df.classList.contains('show') ? '- 세부 조건 접기' : '+ 세부 조건 직접 선택하기 (선택사항)';
+});
+
+document.getElementById('reco-run').addEventListener('click', runRecommend);
+
+/* ===== 뉴스 추천 엔진 ===== */
+
+const NEWS_THEME_KEYWORDS = {
+  '가격동향': ['가격','단가','품귀','폭등','인상'],
+  '실적': ['실적','매출','영업이익','분기'],
+  '패키징': ['패키징','후공정','테스트','pcb'],
+  '정책투자': ['정책','투자','정부','메가프로젝트','팹','공장','클러스터'],
+  '주가시장심리': ['주가','증시','투심','코스피','급등','급락'],
+  '시장점유율': ['점유율','경쟁','1위','선두','마이크론'],
+  '공급망': ['공급망','생산능력','재고','장비','설비','증설'],
+  'HBM': ['hbm','고대역폭','메모리']
+};
+
+function detectNewsThemesFromText(text){
+  const lower = text.toLowerCase();
+  const hits = new Set();
+  for(const [theme, kws] of Object.entries(NEWS_THEME_KEYWORDS)){
+    if(kws.some(k => lower.includes(k))) hits.add(theme);
+  }
+  return Array.from(hits);
+}
+
+function newsSearchText(n){
+  return [n.title, n.summary, n.source, ...(n.tags||[])].join(' ');
+}
+
+function scoreNews(n, tokens, themes){
+  let raw = 0, reasons = [];
+  const text = newsSearchText(n);
+
+  const matchedThemes = themes.filter(t => (n.tags||[]).includes(t));
+  if(matchedThemes.length){
+    raw += 45;
+    reasons.push('🎯 관심 테마와 일치: ' + matchedThemes.join(', '));
+  }
+
+  const matchedTokens = tokens.filter(t => text.includes(t));
+  if(matchedTokens.length){
+    raw += Math.min(30, matchedTokens.length * 8);
+    reasons.push('🔎 입력하신 내용과 일치: ' + matchedTokens.slice(0,4).join(', '));
+  }
+
+  if(/^\d{4}-\d{2}-\d{2}$/.test(n.date)){
+    const d = new Date(n.date + 'T00:00:00');
+    const daysAgo = Math.round((TODAY - d) / 86400000);
+    if(daysAgo <= 3){ raw += 15; reasons.push('🆕 최근 3일 이내 기사'); }
+    else if(daysAgo <= 7){ raw += 8; reasons.push('🕐 최근 1주일 이내 기사'); }
+  }
+
+  if(reasons.length === 0) reasons.push('📅 최신순으로 정렬됨');
+
+  const pct = Math.max(0, Math.min(100, Math.round(raw)));
+  return {pct, reasons, matchedThemes};
+}
+
+function runNewsRecommend(){
+  const freeText = (document.getElementById('news-pref-freetext').value || '').trim();
+  const themes = detectNewsThemesFromText(freeText);
+  const tokens = tokenizeFreeText(freeText);
+
+  const ranked = MARKET.news.map(n => ({n, ...scoreNews(n, tokens, themes)}))
+    .sort((a,b) => b.pct - a.pct || (b.n.date||'').localeCompare(a.n.date||''));
+
+  const parsedBits = [];
+  if(themes.length) parsedBits.push('관심 테마: ' + themes.join(', '));
+  if(tokens.length) parsedBits.push('인식된 키워드: ' + tokens.slice(0,8).join(', '));
+  const parsedNote = parsedBits.length
+    ? `<p class="parsed-note">🧭 입력하신 내용에서 이렇게 이해했어요 — ${parsedBits.join(' · ')}</p>`
+    : `<p class="parsed-note">🧭 특별한 키워드가 없어서 최신 기사 순으로 정렬했어요.</p>`;
+
+  const box = document.getElementById('news-reco-results');
+  box.innerHTML = parsedNote + ranked.map((r, idx) => {
+    const t = tierInfo(r.pct);
+    return `
+    <div class="news-reco-card ${t.cls}">
+      <div class="news-reco-head">
+        <span class="priority-badge">${idx+1}</span>
+        <span class="match-score" style="flex:1"><b>${r.pct}%</b><div class="match-bar-track"><div class="match-bar-fill" style="width:${r.pct}%"></div></div></span>
+        <span class="tier-label">${t.label}</span>
+      </div>
+      <h4><span class="news-src">${r.n.source}</span>${r.n.title}</h4>
+      <div class="reco-meta">📅 ${r.n.date}</div>
+      <div>${r.reasons.map(rs => `<span class="reason">${rs}</span>`).join('')}</div>
+      <p>${r.n.summary}</p>
+      <a class="link" href="${r.n.url}" target="_blank">원문 보기 →</a>
+    </div>`;
+  }).join('');
+  box.classList.add('show');
+}
+
+document.getElementById('news-reco-run').addEventListener('click', runNewsRecommend);
+
+/* ===== 탭 전환 ===== */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+const qEl=document.getElementById('q'),cat=document.getElementById('cat'),stats=document.getElementById('stats'),list=document.getElementById('list');
+qEl.oninput=render;cat.onchange=render;
+load();
+</script></html>
